@@ -20,7 +20,7 @@ else()
 endif()
 set(SAPI_CLIENT C)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/user-agent.cpp.in"
-    user-agent.cpp @ONLY ESCAPE_QUOTES)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/user-agent.cpp @ONLY ESCAPE_QUOTES)
 
 set(PRODUCT_NAME "D-WAVE C PACK")
 
@@ -99,7 +99,7 @@ set(SAPI_REMOTE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/retry-service.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/sapi-service.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/threadpool.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/user-agent.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/user-agent.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../find-embedding/include
@@ -128,7 +128,7 @@ if(ENABLE_LIBRARY)
       src/freefuncs.cpp
       src/defaults.cpp
       src/sapi-impl.cpp
-      ${CMAKE_CURRENT_SOURCE_DIR}/version.c
+      src/version.c
       ${FIND_EMBEDDING_SOURCES}
       ${FIX_VARIABLES_SOURCES}
       ${SAPI_LOCAL_SOURCES}
@@ -182,7 +182,7 @@ if(ENABLE_LIBRARY)
 
   #install(DIRECTORY examples DESTINATION .)
 
- 
+
 
   # Packaging
 
