@@ -74,16 +74,6 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 include(coinor)
 include_directories(${COINOR_INCLUDE_DIR})
 
-# External: orang
-ExternalProject_Add(orang
-    GIT_REPOSITORY "http://git.dwavesys.local/scm/~marshall/orang.git"
-    GIT_TAG "v1.1"
-    UPDATE_COMMAND ""
-    CONFIGURE_COMMAND ""
-    CMAKE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND "")
-
 set(FIND_EMBEDDING_SOURCES
     ${CMAKE_SOURCE_DIR}/../find-embedding/src/find_embedding.cpp)
 
@@ -91,8 +81,6 @@ set(FIX_VARIABLES_SOURCES
     ${CMAKE_SOURCE_DIR}/../fix-variables/src/fix_variables.cpp)
 
 set(SAPI_LOCAL_SOURCES
-    ${CMAKE_SOURCE_DIR}/../local-solvers/src/orang-heuristic.cpp
-    ${CMAKE_SOURCE_DIR}/../local-solvers/src/orang-solvers.cpp
     ${CMAKE_SOURCE_DIR}/../local-solvers/src/problems.cpp)
 
 set(QSAGE_SOURCES
@@ -118,8 +106,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/../fix-variables/include
     ${CMAKE_SOURCE_DIR}/../local-solvers/include
     ${CMAKE_SOURCE_DIR}/../qsage/include
-    ${CMAKE_SOURCE_DIR}/../remote/include
-    ${CMAKE_CURRENT_BINARY_DIR}/orang-prefix/src/orang/src)
+    ${CMAKE_SOURCE_DIR}/../remote/include)
 
 
 option(ENABLE_LIBRARY "Build client library" ON)
@@ -137,7 +124,7 @@ if(ENABLE_LIBRARY)
       src/internal.cpp
       src/global.cpp
       src/remote.cpp
-      src/local.cpp
+      #src/local.cpp
       src/freefuncs.cpp
       src/defaults.cpp
       src/sapi-impl.cpp
@@ -153,7 +140,6 @@ if(ENABLE_LIBRARY)
       ${CURL_LIBRARY}
       ${COINOR_LIBRARIES})
 
-  add_dependencies(dwave_sapi orang)
 
   get_target_property(DWAVE_SAPI_LINK_FLAGS dwave_sapi LINK_FLAGS)
 
