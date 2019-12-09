@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake-modules)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake-modules)
 project(sapi-c-client CXX C)
 include(ExternalProject)
 
@@ -19,7 +19,7 @@ else()
   message(SEND_ERROR "Unknown system type")
 endif()
 set(SAPI_CLIENT C)
-configure_file("${CMAKE_SOURCE_DIR}/../remote/src/user-agent.cpp.in"
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/user-agent.cpp.in"
     user-agent.cpp @ONLY ESCAPE_QUOTES)
 
 set(PRODUCT_NAME "D-WAVE C PACK")
@@ -36,7 +36,7 @@ else()
   set(README_LINUX_NSS)
 endif()
 configure_file(README.txt.in README.txt @ONLY)
-configure_file(${CMAKE_SOURCE_DIR}/licenses/eula.txt.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/licenses/eula.txt.in
     ${CMAKE_CURRENT_BINARY_DIR}/licenses/eula.txt @ONLY)
 
 set(DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/download)
@@ -63,57 +63,57 @@ elseif(MSVC)
   endif()
 endif()
 
-configure_file(src/version.c.in version.c @ONLY ESCAPE_QUOTES)
+configure_file(src/version.c.in ${CMAKE_CURRENT_SOURCE_DIR}/src/version.c @ONLY ESCAPE_QUOTES)
 
 # Boost
-find_package(Boost 1.53 REQUIRED COMPONENTS system)
-add_definitions(-DBOOST_ALL_NO_LIB)
-include_directories(SYSTEM ${Boost_INCLUDE_DIR})
+#find_package(Boost 1.53 REQUIRED COMPONENTS system)
+#add_definitions(-DBOOST_ALL_NO_LIB)
+#include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 # coin-or
 include(coinor)
 include_directories(${COINOR_INCLUDE_DIR})
 
 set(FIND_EMBEDDING_SOURCES
-    ${CMAKE_SOURCE_DIR}/../find-embedding/src/find_embedding.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../find-embedding/src/find_embedding.cpp)
 
 set(FIX_VARIABLES_SOURCES
-    ${CMAKE_SOURCE_DIR}/../fix-variables/src/fix_variables.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fix-variables/src/fix_variables.cpp)
 
 set(SAPI_LOCAL_SOURCES
-    ${CMAKE_SOURCE_DIR}/../local-solvers/src/problems.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../local-solvers/src/problems.cpp)
 
 set(QSAGE_SOURCES
-    ${CMAKE_SOURCE_DIR}/../qsage/src/blackbox.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../qsage/src/blackbox.cpp)
 
 set(SAPI_REMOTE_SOURCES
-    ${CMAKE_SOURCE_DIR}/../remote/src/answer-service.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/await.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/base64.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/decode-answer.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/decode-qp.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/encode-qp.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/http-service.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/json.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/problem-manager.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/retry-service.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/sapi-service.cpp
-    ${CMAKE_SOURCE_DIR}/../remote/src/threadpool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/answer-service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/await.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/base64.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/decode-answer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/decode-qp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/encode-qp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/http-service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/json.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/problem-manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/retry-service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/sapi-service.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/src/threadpool.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/user-agent.cpp)
 
-include_directories(${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/../find-embedding/include
-    ${CMAKE_SOURCE_DIR}/../fix-variables/include
-    ${CMAKE_SOURCE_DIR}/../local-solvers/include
-    ${CMAKE_SOURCE_DIR}/../qsage/include
-    ${CMAKE_SOURCE_DIR}/../remote/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../find-embedding/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../fix-variables/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../local-solvers/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../qsage/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../remote/include)
 
 
 option(ENABLE_LIBRARY "Build client library" ON)
 if(ENABLE_LIBRARY)
   # libcurl
-  find_package(CURL 7.28 REQUIRED)
-  include_directories(SYSTEM ${CURL_INCLUDE_DIRS})
+  #find_package(CURL 7.28 REQUIRED)
+  #include_directories(SYSTEM ${CURL_INCLUDE_DIRS})
 
   add_library(dwave_sapi SHARED
       src/dwave_sapi.cpp
@@ -128,7 +128,7 @@ if(ENABLE_LIBRARY)
       src/freefuncs.cpp
       src/defaults.cpp
       src/sapi-impl.cpp
-      ${CMAKE_BINARY_DIR}/version.c
+      ${CMAKE_CURRENT_SOURCE_DIR}/version.c
       ${FIND_EMBEDDING_SOURCES}
       ${FIX_VARIABLES_SOURCES}
       ${SAPI_LOCAL_SOURCES}
@@ -136,8 +136,8 @@ if(ENABLE_LIBRARY)
       ${SAPI_REMOTE_SOURCES})
 
   target_link_libraries(dwave_sapi
-      ${Boost_SYSTEM_LIBRARY}
-      ${CURL_LIBRARY}
+      PRIVATE Boost::system
+      cpr
       ${COINOR_LIBRARIES})
 
 
@@ -149,10 +149,10 @@ if(ENABLE_LIBRARY)
 
   if(CMAKE_HOST_APPLE)
     list(APPEND DWAVE_SAPI_LINK_FLAGS
-        "-Wl,-exported_symbols_list,${CMAKE_SOURCE_DIR}/exported-symbols-osx.map")
+        "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/exported-symbols-osx.map")
   elseif(CMAKE_HOST_UNIX)
     list(APPEND DWAVE_SAPI_LINK_FLAGS
-        "-Wl,--version-script=${CMAKE_SOURCE_DIR}/version.map")
+        "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/version.map")
   endif()
 
   set_target_properties(dwave_sapi PROPERTIES
@@ -175,18 +175,14 @@ if(ENABLE_LIBRARY)
   endif()
 
   install(FILES
-      ${CMAKE_BINARY_DIR}/README.txt
       ${CMAKE_CURRENT_SOURCE_DIR}/include/dwave_sapi.h
-      DESTINATION .)
+      DESTINATION include/dwave)
 
-  install(TARGETS dwave_sapi DESTINATION .)
+  install(TARGETS dwave_sapi DESTINATION lib)
 
-  install(DIRECTORY examples DESTINATION .)
+  #install(DIRECTORY examples DESTINATION .)
 
-  install(FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/licenses/eula.txt
-      ../licenses.txt
-      DESTINATION licenses)
+ 
 
   # Packaging
 
