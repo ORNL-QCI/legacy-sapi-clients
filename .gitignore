@@ -41,3 +41,5 @@
 **/.ipynb_checkpoints
 compile_commands.json
 /docs/doxygen/html**
+c-client/src/version.c
+remote/src/user-agent.cpp
