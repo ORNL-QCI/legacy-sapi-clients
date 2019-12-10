@@ -455,6 +455,7 @@ DWAVE_SAPI sapi_Code sapi_solveQSage(const sapi_QSageObjFunc* obj_func, const sa
 	// {
 	// 	return handleException(current_exception(), err_msg);
 	// }
+    return SAPI_OK;
 }
 
 

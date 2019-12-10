@@ -71,8 +71,8 @@ configure_file(src/version.c.in ${CMAKE_CURRENT_SOURCE_DIR}/src/version.c @ONLY 
 #include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 # coin-or
-include(coinor)
-include_directories(${COINOR_INCLUDE_DIR})
+#include(coinor)
+#include_directories(${COINOR_INCLUDE_DIR})
 
 set(FIND_EMBEDDING_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../find-embedding/src/find_embedding.cpp)
