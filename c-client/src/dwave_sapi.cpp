@@ -13,7 +13,7 @@
 #include <boost/random.hpp>
 
 #include "find_embedding.hpp"
-#include "blackbox.hpp"
+// #include "blackbox.hpp"
 
 #include "dwave_sapi.h"
 #include "conversions.h"
@@ -75,37 +75,37 @@ private:
 };
 
 
-class IsingSolverCQSage : public blackbox::IsingSolver
+class IsingSolverCQSage //: public blackbox::IsingSolver
 {
 public:
 	IsingSolverCQSage(const sapi_Solver* sapiSolverPtr, const sapi_SolverParameters* solverParams) : sapiSolverPtr_(sapiSolverPtr), solverParams_(solverParams)
 	{
-		if (!sapiSolverPtr_)
-			throw blackbox::BlackBoxException("ising solver is invalid");
+		// if (!sapiSolverPtr_)
+		// 	throw blackbox::BlackBoxException("ising solver is invalid");
 
-		const sapi_SolverProperties* solverProperty = sapi_getSolverProperties(sapiSolverPtr_);
+		// const sapi_SolverProperties* solverProperty = sapi_getSolverProperties(sapiSolverPtr_);
 
-		qubits_.resize(solverProperty->quantum_solver->qubits_len);
-		std::copy(solverProperty->quantum_solver->qubits, solverProperty->quantum_solver->qubits + solverProperty->quantum_solver->qubits_len, qubits_.begin());
+		// qubits_.resize(solverProperty->quantum_solver->qubits_len);
+		// std::copy(solverProperty->quantum_solver->qubits, solverProperty->quantum_solver->qubits + solverProperty->quantum_solver->qubits_len, qubits_.begin());
 
-		couplers_.resize(solverProperty->quantum_solver->couplers_len);
-		for (size_t i = 0; i < solverProperty->quantum_solver->couplers_len; ++i)
-		{
-			couplers_[i].first = solverProperty->quantum_solver->couplers[i].q1;
-			couplers_[i].second = solverProperty->quantum_solver->couplers[i].q2;
-		}
+		// couplers_.resize(solverProperty->quantum_solver->couplers_len);
+		// for (size_t i = 0; i < solverProperty->quantum_solver->couplers_len; ++i)
+		// {
+		// 	couplers_[i].first = solverProperty->quantum_solver->couplers[i].q1;
+		// 	couplers_[i].second = solverProperty->quantum_solver->couplers[i].q2;
+		// }
 
-		if (solverProperty->ising_ranges != NULL)
-		{
-			hMin_ = solverProperty->ising_ranges->h_min;
-			hMax_ = solverProperty->ising_ranges->h_max;
-		}
+		// if (solverProperty->ising_ranges != NULL)
+		// {
+		// 	hMin_ = solverProperty->ising_ranges->h_min;
+		// 	hMax_ = solverProperty->ising_ranges->h_max;
+		// }
 
-		if (solverProperty->ising_ranges != NULL)
-		{
-			jMin_ = solverProperty->ising_ranges->j_min;
-			jMax_ = solverProperty->ising_ranges->j_max;
-		}
+		// if (solverProperty->ising_ranges != NULL)
+		// {
+		// 	jMin_ = solverProperty->ising_ranges->j_min;
+		// 	jMax_ = solverProperty->ising_ranges->j_max;
+		// }
 	}
 
 	virtual ~IsingSolverCQSage()
@@ -116,50 +116,50 @@ public:
 private:
 	virtual void solveIsingImpl(const std::vector<double>& h, const std::map<std::pair<int, int>, double>& j, std::vector<std::vector<int> >& solutions, std::vector<double>& energies, std::vector<int>& numOccurrences) const
 	{
-    vector<sapi_ProblemEntry> entries;
-    entries.reserve(h.size() + j.size());
-    for (auto i = 0 * h.size(); i < h.size(); ++i) {
-      auto ei = static_cast<int>(i);
-      if (h[i] != 0.0) entries.push_back(sapi_ProblemEntry{ei, ei, h[i]});
-    }
-    BOOST_FOREACH(const auto& e, j) {
-      if (e.second != 0.0) entries.push_back(sapi_ProblemEntry{e.first.first, e.first.second, e.second});
-    }
+    // vector<sapi_ProblemEntry> entries;
+    // entries.reserve(h.size() + j.size());
+    // for (auto i = 0 * h.size(); i < h.size(); ++i) {
+    //   auto ei = static_cast<int>(i);
+    //   if (h[i] != 0.0) entries.push_back(sapi_ProblemEntry{ei, ei, h[i]});
+    // }
+    // BOOST_FOREACH(const auto& e, j) {
+    //   if (e.second != 0.0) entries.push_back(sapi_ProblemEntry{e.first.first, e.first.second, e.second});
+    // }
 
-		sapi_Problem p;
-		p.len = entries.size();
-		p.elements = entries.data();
+	// 	sapi_Problem p;
+	// 	p.len = entries.size();
+	// 	p.elements = entries.data();
 
-		sapi_IsingResult* isingResult = NULL;
-		char err_msg[SAPI_ERROR_MESSAGE_MAX_SIZE];
-		if (sapi_solveIsing(sapiSolverPtr_, &p, solverParams_, &isingResult, err_msg) != SAPI_OK)
-			throw blackbox::BlackBoxException(std::string("SAPI solver failed: ") + std::string(err_msg));
+	// 	sapi_IsingResult* isingResult = NULL;
+	// 	char err_msg[SAPI_ERROR_MESSAGE_MAX_SIZE];
+	// 	if (sapi_solveIsing(sapiSolverPtr_, &p, solverParams_, &isingResult, err_msg) != SAPI_OK)
+	// 		throw blackbox::BlackBoxException(std::string("SAPI solver failed: ") + std::string(err_msg));
 
-		solutions.resize(isingResult->num_solutions);
-		for (size_t i = 0; i < isingResult->num_solutions; ++i)
-		{
-			solutions[i].resize(isingResult->solution_len);
-			std::copy(isingResult->solutions + i * isingResult->solution_len, isingResult->solutions + (i + 1) * isingResult->solution_len, solutions[i].begin());
-		}
+	// 	solutions.resize(isingResult->num_solutions);
+	// 	for (size_t i = 0; i < isingResult->num_solutions; ++i)
+	// 	{
+	// 		solutions[i].resize(isingResult->solution_len);
+	// 		std::copy(isingResult->solutions + i * isingResult->solution_len, isingResult->solutions + (i + 1) * isingResult->solution_len, solutions[i].begin());
+	// 	}
 
-		energies.resize(isingResult->num_solutions);
-		std::copy(isingResult->energies, isingResult->energies + isingResult->num_solutions, energies.begin());
+	// 	energies.resize(isingResult->num_solutions);
+	// 	std::copy(isingResult->energies, isingResult->energies + isingResult->num_solutions, energies.begin());
 
-		if (isingResult->num_occurrences != NULL)
-		{
-			numOccurrences.resize(isingResult->num_solutions);
-			std::copy(isingResult->num_occurrences, isingResult->num_occurrences + isingResult->num_solutions, numOccurrences.begin());
-		}
+	// 	if (isingResult->num_occurrences != NULL)
+	// 	{
+	// 		numOccurrences.resize(isingResult->num_solutions);
+	// 		std::copy(isingResult->num_occurrences, isingResult->num_occurrences + isingResult->num_solutions, numOccurrences.begin());
+	// 	}
 
-		// deallocate memory for p and ising result
-		sapi_freeIsingResult(isingResult);
+	// 	// deallocate memory for p and ising result
+	// 	sapi_freeIsingResult(isingResult);
 	}
 
 	const sapi_Solver* sapiSolverPtr_;
 	const sapi_SolverParameters* solverParams_;
 };
 
-class LocalInteractionCQSage : public blackbox::LocalInteraction
+class LocalInteractionCQSage //: public blackbox::LocalInteraction
 {
 public:
 	virtual ~LocalInteractionCQSage() {}
@@ -176,10 +176,11 @@ private:
 	}
 };
 
-class BlackBoxObjectiveFunctionC : public blackbox::BlackBoxObjectiveFunction
+class BlackBoxObjectiveFunctionC //: public blackbox::BlackBoxObjectiveFunction
 {
 public:
-	BlackBoxObjectiveFunctionC(const sapi_QSageObjectiveFunction of, blackbox::LocalInteractionPtr localInteractionPtr, void* extraArg) : BlackBoxObjectiveFunction(localInteractionPtr), of_(of), extraArg_(extraArg)
+	BlackBoxObjectiveFunctionC(
+    const sapi_QSageObjectiveFunction of, void* extraArg) : of_(of), extraArg_(extraArg)
 	{
 		if (!of_)
 			throw blackbox::BlackBoxException("objective function is invalid");
@@ -196,8 +197,8 @@ public:
 			statesOneDim.insert(statesOneDim.end(), states[i].begin(), states[i].end());
 
 		sapi_Code code = of_(&statesOneDim[0], numStates * stateLen, numStates, extraArg_, retPtr);
-		if (code != SAPI_OK)
-			throw blackbox::BlackBoxException("The objective_function is incorrect");
+		// if (code != SAPI_OK)
+		// 	throw blackbox::BlackBoxException("The objective_function is incorrect");
 
 		return ret;
 	}
@@ -210,10 +211,11 @@ private:
 };
 
 
-class LPSolverC : public blackbox::LPSolver
+class LPSolverC //} : public blackbox::LPSolver
 {
 public:
-	LPSolverC(const sapi_QSageLPSolver lps, blackbox::LocalInteractionPtr localInteractionPtr, void* extraArg) : lps_(lps), LPSolver(localInteractionPtr), extraArg_(extraArg)
+	LPSolverC(
+        const sapi_QSageLPSolver lps,  void* extraArg) : lps_(lps), extraArg_(extraArg)
 	{
 		if (!lps_)
 			throw blackbox::BlackBoxException("lp_solver is invalid");
@@ -279,8 +281,8 @@ private:
 		std::vector<double> ret(numVars);
 		double* retPtr = &ret[0];
 		sapi_Code code = lps_(fPtr, AineqPtr, bineqPtr, AeqPtr, beqPtr, lbPtr, ubPtr, numVars, AineqSize, AeqSize, extraArg_, retPtr);
-		if (code != SAPI_OK)
-			throw blackbox::BlackBoxException("The lp_solver is incorrect");
+		// if (code != SAPI_OK)
+		// 	throw blackbox::BlackBoxException("The lp_solver is incorrect");
 
 		return ret;
 	}
@@ -401,58 +403,58 @@ DWAVE_SAPI sapi_Code sapi_findEmbedding(const sapi_Problem* S, const sapi_Proble
 
 DWAVE_SAPI sapi_Code sapi_solveQSage(const sapi_QSageObjFunc* obj_func, const sapi_Solver* solver, const sapi_SolverParameters* solver_params, const sapi_QSageParameters* qsage_params, sapi_QSageResult** qsage_result, char* err_msg)
 {
-	try
-	{
-		blackbox::LocalInteractionPtr localInteractionPtr(new LocalInteractionCQSage());
-		blackbox::BlackBoxObjectiveFunctionPtr blackBoxObjectiveFunctionPtr(new BlackBoxObjectiveFunctionC(obj_func->objective_function, localInteractionPtr, obj_func->objective_function_extra_arg));
+	// try
+	// {
+	// 	blackbox::LocalInteractionPtr localInteractionPtr(new LocalInteractionCQSage());
+	// 	blackbox::BlackBoxObjectiveFunctionPtr blackBoxObjectiveFunctionPtr(new BlackBoxObjectiveFunctionC(obj_func->objective_function, localInteractionPtr, obj_func->objective_function_extra_arg));
 
-		blackbox::IsingSolverPtr isingSolverPtr(new IsingSolverCQSage(solver, solver_params));
+	// 	blackbox::IsingSolverPtr isingSolverPtr(new IsingSolverCQSage(solver, solver_params));
 
-		blackbox::BlackBoxExternalParams blackBoxExternalParams;
+	// 	blackbox::BlackBoxExternalParams blackBoxExternalParams;
 
-		if (qsage_params->draw_sample != SAPI_QSAGE_DEFAULT_PARAMETERS.draw_sample)
-			blackBoxExternalParams.drawSample = qsage_params->draw_sample ? true : false;
+	// 	if (qsage_params->draw_sample != SAPI_QSAGE_DEFAULT_PARAMETERS.draw_sample)
+	// 		blackBoxExternalParams.drawSample = qsage_params->draw_sample ? true : false;
 
-		if (qsage_params->exit_threshold_value != SAPI_QSAGE_DEFAULT_PARAMETERS.exit_threshold_value)
-			blackBoxExternalParams.exitThresholdValue = qsage_params->exit_threshold_value;
+	// 	if (qsage_params->exit_threshold_value != SAPI_QSAGE_DEFAULT_PARAMETERS.exit_threshold_value)
+	// 		blackBoxExternalParams.exitThresholdValue = qsage_params->exit_threshold_value;
 
-		if (qsage_params->initial_solution != SAPI_QSAGE_DEFAULT_PARAMETERS.initial_solution)
-		{
-			for (int i = 0; i < obj_func->num_vars; ++i)
-				blackBoxExternalParams.initialSolution.push_back(qsage_params->initial_solution[i]);
-		}
+	// 	if (qsage_params->initial_solution != SAPI_QSAGE_DEFAULT_PARAMETERS.initial_solution)
+	// 	{
+	// 		for (int i = 0; i < obj_func->num_vars; ++i)
+	// 			blackBoxExternalParams.initialSolution.push_back(qsage_params->initial_solution[i]);
+	// 	}
 
-		if (qsage_params->ising_qubo != SAPI_QSAGE_DEFAULT_PARAMETERS.ising_qubo)
-		{
-			if (qsage_params->ising_qubo == SAPI_PROBLEM_TYPE_QUBO)
-				blackBoxExternalParams.isingQubo = blackbox::QUBO;
-		}
+	// 	if (qsage_params->ising_qubo != SAPI_QSAGE_DEFAULT_PARAMETERS.ising_qubo)
+	// 	{
+	// 		if (qsage_params->ising_qubo == SAPI_PROBLEM_TYPE_QUBO)
+	// 			blackBoxExternalParams.isingQubo = blackbox::QUBO;
+	// 	}
 
-		blackBoxExternalParams.localInteractionPtr = localInteractionPtr;
+	// 	blackBoxExternalParams.localInteractionPtr = localInteractionPtr;
 
-		if (qsage_params->lp_solver != SAPI_QSAGE_DEFAULT_PARAMETERS.lp_solver)
-			blackBoxExternalParams.lpSolverPtr.reset(new LPSolverC(qsage_params->lp_solver, localInteractionPtr, qsage_params->lp_solver_extra_arg));
+	// 	if (qsage_params->lp_solver != SAPI_QSAGE_DEFAULT_PARAMETERS.lp_solver)
+	// 		blackBoxExternalParams.lpSolverPtr.reset(new LPSolverC(qsage_params->lp_solver, localInteractionPtr, qsage_params->lp_solver_extra_arg));
 
-		if (qsage_params->max_num_state_evaluations != SAPI_QSAGE_DEFAULT_PARAMETERS.max_num_state_evaluations)
-			blackBoxExternalParams.maxNumStateEvaluations = qsage_params->max_num_state_evaluations;
+	// 	if (qsage_params->max_num_state_evaluations != SAPI_QSAGE_DEFAULT_PARAMETERS.max_num_state_evaluations)
+	// 		blackBoxExternalParams.maxNumStateEvaluations = qsage_params->max_num_state_evaluations;
 
-		if (qsage_params->use_random_seed)
-			blackBoxExternalParams.randomSeed = qsage_params->random_seed;
+	// 	if (qsage_params->use_random_seed)
+	// 		blackBoxExternalParams.randomSeed = qsage_params->random_seed;
 
-		if (qsage_params->timeout != SAPI_QSAGE_DEFAULT_PARAMETERS.timeout)
-			blackBoxExternalParams.timeout = qsage_params->timeout;
+	// 	if (qsage_params->timeout != SAPI_QSAGE_DEFAULT_PARAMETERS.timeout)
+	// 		blackBoxExternalParams.timeout = qsage_params->timeout;
 
-		if (qsage_params->verbose != SAPI_QSAGE_DEFAULT_PARAMETERS.verbose)
-			blackBoxExternalParams.verbose = qsage_params->verbose;
+	// 	if (qsage_params->verbose != SAPI_QSAGE_DEFAULT_PARAMETERS.verbose)
+	// 		blackBoxExternalParams.verbose = qsage_params->verbose;
 
-		*qsage_result = dwave_sapi::construct_qsage_result(blackbox::solveBlackBox(blackBoxObjectiveFunctionPtr, obj_func->num_vars, isingSolverPtr, blackBoxExternalParams));
+	// 	*qsage_result = dwave_sapi::construct_qsage_result(blackbox::solveBlackBox(blackBoxObjectiveFunctionPtr, obj_func->num_vars, isingSolverPtr, blackBoxExternalParams));
 
-		return SAPI_OK;
-	}
-	catch (...)
-	{
-		return handleException(current_exception(), err_msg);
-	}
+	// 	return SAPI_OK;
+	// }
+	// catch (...)
+	// {
+	// 	return handleException(current_exception(), err_msg);
+	// }
 }
 
 

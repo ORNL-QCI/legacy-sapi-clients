@@ -132,13 +132,13 @@ if(ENABLE_LIBRARY)
       ${FIND_EMBEDDING_SOURCES}
       ${FIX_VARIABLES_SOURCES}
       ${SAPI_LOCAL_SOURCES}
-      ${QSAGE_SOURCES}
+      #${QSAGE_SOURCES}
       ${SAPI_REMOTE_SOURCES})
 
   target_link_libraries(dwave_sapi
       PRIVATE Boost::system
       cpr
-      ${COINOR_LIBRARIES})
+      )
 
 
   get_target_property(DWAVE_SAPI_LINK_FLAGS dwave_sapi LINK_FLAGS)
