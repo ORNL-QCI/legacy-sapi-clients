@@ -114,6 +114,27 @@ if(ENABLE_LIBRARY)
   # libcurl
   #find_package(CURL 7.28 REQUIRED)
   #include_directories(SYSTEM ${CURL_INCLUDE_DIRS})
+ if (APPLE)
+   add_library(dwave_sapi STATIC
+      src/dwave_sapi.cpp
+      src/embed-problem.cpp
+      src/unembed-answer.cpp
+      src/fix-variables.cpp
+      src/conversions.cpp
+      src/internal.cpp
+      src/global.cpp
+      src/remote.cpp
+      #src/local.cpp
+      src/freefuncs.cpp
+      src/defaults.cpp
+      src/sapi-impl.cpp
+      src/version.c
+      ${FIND_EMBEDDING_SOURCES}
+      ${FIX_VARIABLES_SOURCES}
+      ${SAPI_LOCAL_SOURCES}
+      #${QSAGE_SOURCES}
+      ${SAPI_REMOTE_SOURCES})
+  else()
 
   add_library(dwave_sapi SHARED
       src/dwave_sapi.cpp
@@ -134,7 +155,7 @@ if(ENABLE_LIBRARY)
       ${SAPI_LOCAL_SOURCES}
       #${QSAGE_SOURCES}
       ${SAPI_REMOTE_SOURCES})
-
+  endif()
   target_link_libraries(dwave_sapi
       PRIVATE Boost::system
       cpr
