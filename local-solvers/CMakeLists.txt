@@ -5,28 +5,6 @@ include(ExternalProject)
 
 file(STRINGS ../version.txt SAPI_VERSION LIMIT_COUNT 1)
 
-# Enable C++11 support
-# requires g++ >=4.4 on Linux
-if(CMAKE_COMPILER_IS_GNUCXX)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-    OUTPUT_VARIABLE GXX_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET)
-  if(GXX_VERSION VERSION_LESS 4.4)
-    message(SEND_ERROR "g++ >= 4.4 required")
-  elseif(GXX_VERSION VERSION_LESS 4.7)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-elseif(MSVC)
-  add_definitions(/D_WIN32_WINNT=0x501)
-  if(MSVC_VERSION EQUAL 1700)
-    add_definitions(/D_VARIADIC_MAX=10)
-  endif()
-endif()
-
 # Source files
 include_directories(include)
 set(SAPILOCAL_SOURCES

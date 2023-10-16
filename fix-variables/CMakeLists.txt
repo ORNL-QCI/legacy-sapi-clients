@@ -4,21 +4,6 @@ project(fix-variables CXX C)
 
 file(STRINGS ../version.txt SAPI_VERSION LIMIT_COUNT 1)
 
-# Enable C++11 support
-# requires g++ >=4.4 on Linux
-if(CMAKE_COMPILER_IS_GNUCXX)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-                  OUTPUT_VARIABLE GXX_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-                  ERROR_QUIET)
-  if(GXX_VERSION VERSION_LESS 4.4)
-    message(SEND_ERROR "g++ >= 4.4 required")
-  elseif(GXX_VERSION VERSION_LESS 4.7)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-endif()
-
 # Boost
 find_package(Boost 1.53 REQUIRED)
 

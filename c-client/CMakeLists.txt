@@ -41,28 +41,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/licenses/eula.txt.in
 
 set(DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/download)
 
-# Enable C++11 support
-# requires g++ >=4.4 on Linux
-if(CMAKE_COMPILER_IS_GNUCXX)
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
-      OUTPUT_VARIABLE GXX_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-      ERROR_QUIET)
-  if(GXX_VERSION VERSION_LESS 4.4)
-    message(SEND_ERROR "g++ >= 4.4 required")
-  elseif(GXX_VERSION VERSION_LESS 4.7)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-elseif(MSVC)
-  add_definitions(/D_WIN32_WINNT=0x501)
-  if(MSVC_VERSION EQUAL 1700)
-    add_definitions(/D_VARIADIC_MAX=10)
-  endif()
-endif()
-
 configure_file(src/version.c.in ${CMAKE_CURRENT_SOURCE_DIR}/src/version.c @ONLY ESCAPE_QUOTES)
 
 # Boost
@@ -114,29 +92,12 @@ if(ENABLE_LIBRARY)
   # libcurl
   #find_package(CURL 7.28 REQUIRED)
   #include_directories(SYSTEM ${CURL_INCLUDE_DIRS})
+  set(_lib_type SHARED)
  if (APPLE)
-   add_library(dwave_sapi STATIC
-      src/dwave_sapi.cpp
-      src/embed-problem.cpp
-      src/unembed-answer.cpp
-      src/fix-variables.cpp
-      src/conversions.cpp
-      src/internal.cpp
-      src/global.cpp
-      src/remote.cpp
-      #src/local.cpp
-      src/freefuncs.cpp
-      src/defaults.cpp
-      src/sapi-impl.cpp
-      src/version.c
-      ${FIND_EMBEDDING_SOURCES}
-      ${FIX_VARIABLES_SOURCES}
-      ${SAPI_LOCAL_SOURCES}
-      #${QSAGE_SOURCES}
-      ${SAPI_REMOTE_SOURCES})
-  else()
+   set(_lib_type STATIC)
+ endif()
 
-  add_library(dwave_sapi SHARED
+  add_library(dwave_sapi ${_lib_type}
       src/dwave_sapi.cpp
       src/embed-problem.cpp
       src/unembed-answer.cpp
@@ -155,10 +116,9 @@ if(ENABLE_LIBRARY)
       ${SAPI_LOCAL_SOURCES}
       #${QSAGE_SOURCES}
       ${SAPI_REMOTE_SOURCES})
-  endif()
   target_link_libraries(dwave_sapi
-      PRIVATE Boost::system
-      cpr
+      PRIVATE Boost::boost
+      cpr::cpr
       )
 
 
